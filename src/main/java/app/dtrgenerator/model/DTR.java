@@ -30,6 +30,8 @@ public class DTR {
 
             for (int i = 1; i < 5; i++) {
                 Row row = sheet.getRow(resultCell.getRowIndex() - i);
+                if (row == null) continue;
+
                 Cell cell = row.getCell(resultCell.getColumnIndex());
 
                 if (ExcelUtil.isCellMatches(cell, Constant.TIME_IN_PATTERN)) {
