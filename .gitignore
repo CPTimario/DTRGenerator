@@ -13,5 +13,3 @@ buildNumber.properties
 .project
 .classpath
 .vscode
-
-*.exe
