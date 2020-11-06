@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 
 import app.dtrgenerator.constant.Constant;
 import app.dtrgenerator.util.DateTimeUtil;
@@ -32,7 +33,7 @@ public class DTR {
                 Row row = sheet.getRow(resultCell.getRowIndex() - i);
                 if (row == null) continue;
 
-                Cell cell = row.getCell(resultCell.getColumnIndex());
+                Cell cell = row.getCell(resultCell.getColumnIndex(), MissingCellPolicy.CREATE_NULL_AS_BLANK);
 
                 if (ExcelUtil.isCellMatches(cell, Constant.TIME_IN_PATTERN)) {
                     Matcher matcher = Constant.TIME_IN_PATTERN.matcher(cell.getStringCellValue());
