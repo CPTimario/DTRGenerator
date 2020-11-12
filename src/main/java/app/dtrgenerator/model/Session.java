@@ -2,6 +2,13 @@ package app.dtrgenerator.model;
 
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+
+import app.dtrgenerator.constant.DateFormat;
+import app.dtrgenerator.constant.TimeFormat;
+import app.dtrgenerator.util.DateTimeUtil;
 
 public class Session implements Comparable<Session> {
     private Date date;
@@ -33,12 +40,24 @@ public class Session implements Comparable<Session> {
     }
 
     public boolean isValid() {
-        return date != null && timeIn != null && timeOut != null;
+        return Objects.nonNull(date) && Objects.nonNull(timeIn) && Objects.nonNull(timeOut);
     }
 
     @Override
-    public int compareTo(Session compareSession) {
-        int result = this.getDate().compareTo(compareSession.getDate());
-        return result != 0 ? result : this.getTimeIn().compareTo(compareSession.getTimeIn());
+    public int compareTo(Session other) {
+        int result = this.getDate().compareTo(other.getDate());
+        if (result != 0)
+            return result;
+        else
+            return this.getTimeIn().compareTo(other.getTimeIn());
+    }
+
+    public Map<String, String> toDataByColumn() {
+        Map<String, String> dataByColumn = new LinkedHashMap<>();
+        dataByColumn.put("A", DateTimeUtil.formatDate(date, DateFormat.SHORT_DASH));
+        dataByColumn.put("B", DateTimeUtil.formatTime(timeIn, TimeFormat.HOUR_MINUTE));
+        dataByColumn.put("C", DateTimeUtil.formatTime(timeOut, TimeFormat.HOUR_MINUTE));
+        dataByColumn.put("D", DateTimeUtil.formatTime(timeIn, TimeFormat.MERIDIEM));
+        return dataByColumn;
     }
 }

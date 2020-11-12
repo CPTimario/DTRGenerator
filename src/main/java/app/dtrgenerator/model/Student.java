@@ -3,6 +3,7 @@ package app.dtrgenerator.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class Student implements Comparable<Student> {
     private String name;
@@ -35,8 +36,24 @@ public class Student implements Comparable<Student> {
     }
 
     @Override
-    public int compareTo(Student compareStudent) {
-        int result = this.sessions.get(0).getDate().compareTo(compareStudent.sessions.get(0).getDate());
-        return result != 0 ? result : this.sessions.get(0).getTimeIn().compareTo(compareStudent.sessions.get(0).getTimeIn());
+    public int compareTo(Student other) {
+        Session thisFirstSession = this.sessions.get(0);
+        Session otherFirstSession = other.sessions.get(0);
+        return thisFirstSession.compareTo(otherFirstSession);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof Student))
+            return false;
+        Student other = (Student) obj;
+        return Objects.equals(name, other.name);
     }
 }
