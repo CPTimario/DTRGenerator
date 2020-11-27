@@ -14,6 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>14</maven.compiler.source>
         <maven.compiler.target>14</maven.compiler.target>
+        <maven.compiler.release>14</maven.compiler.release>
     </properties>
 
     <dependencies>
@@ -53,6 +54,7 @@
                             <mainClass>app.dtrgenerator.DTRGenerator</mainClass>
                             <platform>windows</platform>
                             <bundleJre>true</bundleJre>
+                            <customizedJre>false</customizedJre>
                         </configuration>
                     </execution>
                 </executions>
