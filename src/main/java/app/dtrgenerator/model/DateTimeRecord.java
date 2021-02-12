@@ -8,6 +8,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import app.dtrgenerator.ui.Message;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
@@ -18,9 +19,9 @@ import app.dtrgenerator.util.DateTimeUtil;
 import app.dtrgenerator.util.ExcelUtil;
 
 public class DateTimeRecord {
-    private Date startDate;
-    private Date endDate;
-    private SortedSet<Student> students;
+    private final Date startDate;
+    private final Date endDate;
+    private final SortedSet<Student> students;
 
     public DateTimeRecord(Date startDate, Date endDate, List<Cell> searchResults) {
         this.startDate = startDate;
@@ -33,24 +34,12 @@ public class DateTimeRecord {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
     public Date getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
     public SortedSet<Student> getStudents() {
         return students;
-    }
-
-    public void setStudents(SortedSet<Student> students) {
-        this.students = students;
     }
 
     private void initializeSessions(List<Cell> searchResults) {
@@ -63,6 +52,8 @@ public class DateTimeRecord {
                 students.add(student);
             }
         }
+        if (students.isEmpty())
+            throw new IllegalStateException(Message.NO_DATA_FOUND);
     }
 
     private Session getSessionFromReferenceCell(Cell reference) {
@@ -71,7 +62,7 @@ public class DateTimeRecord {
         int maxRowsToLookup = 5;
         int rowIndex = reference.getRowIndex();
         int columnIndex = reference.getColumnIndex();
-        for (int index = 1; index < maxRowsToLookup; index++) {
+        for (int index = maxRowsToLookup; index > 0; index--) {
             Row previousRow = sheet.getRow(rowIndex - index);
             if (Objects.nonNull(previousRow)) {
                 Cell previousCell = previousRow.getCell(columnIndex, MissingCellPolicy.CREATE_NULL_AS_BLANK);
@@ -95,8 +86,7 @@ public class DateTimeRecord {
 
     private String getTimeStringFromCell(Cell cell, Pattern pattern) {
         Matcher matcher = pattern.matcher(cell.getStringCellValue());
-        matcher.find();
-        return matcher.group("time");
+        return matcher.find() ? matcher.group("time") : "";
     }
 
     private Student getStudent(String name) {

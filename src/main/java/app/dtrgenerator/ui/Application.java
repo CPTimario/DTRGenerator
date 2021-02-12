@@ -1,43 +1,5 @@
 package app.dtrgenerator.ui;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.GroupLayout.Group;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
-
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import app.dtrgenerator.constant.DateFormat;
 import app.dtrgenerator.constant.Default;
 import app.dtrgenerator.model.DateTimeRecord;
@@ -49,8 +11,30 @@ import net.sourceforge.jdatepicker.JDatePicker;
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilDateModel;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import javax.swing.*;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.GroupLayout.Group;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.Serial;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class Application extends JFrame {
+    @Serial
     private static final long serialVersionUID = 1L;
     private static final String TITLE = "DTR Generator";
 
@@ -77,9 +61,6 @@ public class Application extends JFrame {
     private JButton btnExport;
 
     private int currentRowIndex;
-    private int sessionCount;
-
-    public static long SERIAL_VERSION_UID = serialVersionUID;
 
     public Application() {
         super(TITLE);
@@ -157,53 +138,44 @@ public class Application extends JFrame {
     }
 
     private ActionListener getOpenActionListener(JTextField textField) {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser(Default.SAVE_PATH);
-                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                fileChooser.setFileFilter(Default.FILE_FILTER);
-                if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-                    textField.setText(selectedFile.getPath());
-                }
+        return event -> {
+            JFileChooser fileChooser = new JFileChooser(Default.SAVE_PATH);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fileChooser.setFileFilter(Default.FILE_FILTER);
+            if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                textField.setText(selectedFile.getPath());
             }
         };
     }
 
     private ActionListener getSaveActionListener(JTextField textField) {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser(Default.SAVE_PATH);
-                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                fileChooser.setFileFilter(Default.FILE_FILTER);
-                fileChooser.setSelectedFile(new File(Default.FILE_NAME));
-                if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-                    textField.setText(selectedFile.getPath());
-                }
+        return event -> {
+            JFileChooser fileChooser = new JFileChooser(Default.SAVE_PATH);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fileChooser.setFileFilter(Default.FILE_FILTER);
+            fileChooser.setSelectedFile(new File(Default.FILE_NAME));
+            if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                textField.setText(selectedFile.getPath());
             }
         };
     }
 
     private ActionListener getExportActionListener() {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (txtName.getText().equals(""))
-                    Prompt.displayError(String.format(Message.INPUT_ERROR, "'Name'"));
-                else if (Objects.isNull(dpStartDate.getModel().getValue()))
-                    Prompt.displayError(String.format(Message.INPUT_ERROR, "'Cut-Off'"));
-                else if (Objects.isNull(dpEndDate.getModel().getValue()))
-                    Prompt.displayError(String.format(Message.INPUT_ERROR, "'Cut-Off'"));
-                else if (txtExcelPath.getText().equals(""))
-                    Prompt.displayError(String.format(Message.INPUT_ERROR, "'Excel Data'"));
-                else if (txtSavePath.getText().equals(""))
-                    Prompt.displayError(String.format(Message.INPUT_ERROR, "'Save As'"));
-                else
-                    export();
-            }
+        return event -> {
+            if (txtName.getText().equals(""))
+                Prompt.displayError(String.format(Message.INPUT_ERROR, "'Name'"));
+            else if (Objects.isNull(dpStartDate.getModel().getValue()))
+                Prompt.displayError(String.format(Message.INPUT_ERROR, "'Cut-Off'"));
+            else if (Objects.isNull(dpEndDate.getModel().getValue()))
+                Prompt.displayError(String.format(Message.INPUT_ERROR, "'Cut-Off'"));
+            else if (txtExcelPath.getText().equals(""))
+                Prompt.displayError(String.format(Message.INPUT_ERROR, "'Excel Data'"));
+            else if (txtSavePath.getText().equals(""))
+                Prompt.displayError(String.format(Message.INPUT_ERROR, "'Save As'"));
+            else
+                export();
         };
     }
 
@@ -259,50 +231,41 @@ public class Application extends JFrame {
             group.addComponent(txtName, 200, 200, 200);
             group.addGap(20, 20, 20);
             group.addComponent(lblCutOff);
-            group.addComponent((Component) dpStartDate, 150, 150, 150);
+            group.addComponent(dpStartDate, 150, 150, 150);
             group.addComponent(lblTo);
-            group.addComponent((Component) dpEndDate, 150, 150, 150);
+            group.addComponent(dpEndDate, 150, 150, 150);
         } else {
             group = layout.createParallelGroup(Alignment.BASELINE);
             group.addComponent(lblName);
             group.addComponent(txtName);
             group.addComponent(lblCutOff);
-            group.addComponent((Component) dpStartDate);
+            group.addComponent(dpStartDate);
             group.addComponent(lblTo);
-            group.addComponent((Component) dpEndDate);
+            group.addComponent(dpEndDate);
         }
         return group;
     }
 
     private Group getSecondLayoutSubGroup(GroupLayout layout, boolean isSequential) {
-        Group group;
-        if (isSequential) {
-            group = layout.createSequentialGroup();
-            group.addComponent(lblExcelPath);
-            group.addComponent(txtExcelPath, 500, 500, 500);
-            group.addComponent(btnOpenExcelPath);
-        } else {
-            group = layout.createParallelGroup(Alignment.BASELINE);
-            group.addComponent(lblExcelPath);
-            group.addComponent(txtExcelPath);
-            group.addComponent(btnOpenExcelPath);
-        }
-        return group;
+        return getGroup(layout, isSequential, lblExcelPath, txtExcelPath, btnOpenExcelPath);
     }
 
     private Group getThirdLayoutSubGroup(GroupLayout layout, boolean isSequential) {
+        return getGroup(layout, isSequential, lblSavePath, txtSavePath, btnOpenSavePath);
+    }
+
+    private Group getGroup(GroupLayout layout, boolean isSequential, JLabel label, JTextField textField, JButton button) {
         Group group;
         if (isSequential) {
             group = layout.createSequentialGroup();
-            group.addComponent(lblSavePath);
-            group.addComponent(txtSavePath, 500, 500, 500);
-            group.addComponent(btnOpenSavePath);
+            group.addComponent(label);
+            group.addComponent(textField, 500, 500, 500);
         } else {
             group = layout.createParallelGroup(Alignment.BASELINE);
-            group.addComponent(lblSavePath);
-            group.addComponent(txtSavePath);
-            group.addComponent(btnOpenSavePath);
+            group.addComponent(label);
+            group.addComponent(textField);
         }
+        group.addComponent(button);
         return group;
     }
 
@@ -314,8 +277,8 @@ public class Application extends JFrame {
             Path fileSavePath = Paths.get(txtSavePath.getText());
             String successMessage = String.format(Message.EXPORT_SUCCESS, fileSavePath.getFileName().toString());
             Prompt.displayInformation(successMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            Prompt.displayError(exception.getMessage());
         }
     }
 
@@ -324,6 +287,7 @@ public class Application extends JFrame {
         List<Cell> searchResults = ExcelUtil.search(workbook, txtName.getText());
         Date startDate = DateTimeUtil.parseDate(dpStartDate.getJFormattedTextField().getText(), DateFormat.SHORT);
         Date endDate = DateTimeUtil.parseDate(dpEndDate.getJFormattedTextField().getText(), DateFormat.SHORT);
+        workbook.close();
         return new DateTimeRecord(startDate, endDate, searchResults);
     }
 
@@ -333,7 +297,7 @@ public class Application extends JFrame {
         CellStyle studentNameStyle = getStudentNameStyle(workbook);
         CellStyle defaultStyle = getDefaultStyle(workbook);
         currentRowIndex = 0;
-        sessionCount = 0;
+        int sessionCount = 0;
         writeDateHeader(sheet, dateTimeRecord.getStartDate(), dateTimeRecord.getEndDate());
         for (Student student : dateTimeRecord.getStudents()) {
             writeStudentName(sheet, studentNameStyle, student.getName());

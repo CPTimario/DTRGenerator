@@ -1,6 +1,7 @@
 package app.dtrgenerator.util;
 
-import java.io.File;
+import org.apache.poi.ss.usermodel.*;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,16 +10,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-
 public class ExcelUtil {
     public static List<Cell> search(Workbook workbook, String search) {
-        List<Cell> results = new ArrayList<Cell>();
+        List<Cell> results = new ArrayList<>();
         for (Sheet sheet : workbook) {
             for (Row row : sheet) {
                 for (Cell cell : row) {
@@ -44,30 +38,20 @@ public class ExcelUtil {
     }
 
     public static void export(Workbook workbook, String exportPath) throws IOException {
-        OutputStream outputStream = new FileOutputStream(new File(exportPath));
+        OutputStream outputStream = new FileOutputStream(exportPath);
         workbook.write(outputStream);
         outputStream.close();
+        workbook.close();
     }
 
     private static String getCellStringValue(Cell cell) {
-        Object value;
-        switch (cell.getCellType()) {
-            case STRING:
-                value = cell.getStringCellValue();
-                break;
-            case BOOLEAN:
-                value = cell.getBooleanCellValue();
-                break;
-            case FORMULA:
-                value = cell.getCellFormula();
-                break;
-            case NUMERIC:
-                value = getCellNumericValue(cell);
-                break;
-            default:
-                value = "";
-                break;
-        }
+        Object value = switch (cell.getCellType()) {
+            case STRING -> cell.getStringCellValue();
+            case BOOLEAN -> cell.getBooleanCellValue();
+            case FORMULA -> cell.getCellFormula();
+            case NUMERIC -> getCellNumericValue(cell);
+            default -> "";
+        };
         return value.toString();
     }
 

@@ -1,20 +1,19 @@
 package app.dtrgenerator.util;
 
+import app.dtrgenerator.constant.DateFormat;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-import app.dtrgenerator.constant.DateFormat;
-
 public class DateTimeUtil {
-    private final static LocalTime MIDNIGHT = LocalTime.of(0, 0);
     private final static LocalTime FIRST_SESSION = LocalTime.of(7, 30);
 
     public static LocalTime parseTime(String timeString) {
         LocalTime time = LocalTime.parse(timeString, DateTimeFormatter.ofPattern("H:mm"));
-        if (time.isAfter(MIDNIGHT) && time.isBefore(FIRST_SESSION))
+        if (time.isAfter(LocalTime.MIDNIGHT) && time.isBefore(FIRST_SESSION))
             time = time.plusHours(12);
         return time;
     }
@@ -41,5 +40,9 @@ public class DateTimeUtil {
 
     public static String formatTime(LocalTime time, String format) {
         return time.format(DateTimeFormatter.ofPattern(format));
+    }
+
+    public static String getElapsedTime(long duration) {
+        return String.format("%02d:%02d", duration / 60, duration % 60);
     }
 }

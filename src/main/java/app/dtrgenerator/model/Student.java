@@ -6,28 +6,20 @@ import java.util.List;
 import java.util.Objects;
 
 public class Student implements Comparable<Student> {
-    private String name;
-    private List<Session> sessions;
+    private final String name;
+    private final List<Session> sessions;
 
     public Student(String name) {
         this.name = name;
-        this.sessions = new ArrayList<Session>();
+        this.sessions = new ArrayList<>();
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public List<Session> getSessions() {
         return sessions;
-    }
-
-    public void setSchedules(List<Session> schedules) {
-        this.sessions = schedules;
     }
 
     public void addSession(Session session) {
@@ -43,17 +35,15 @@ public class Student implements Comparable<Student> {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(name);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Student)) return false;
+        Student student = (Student) o;
+        return Objects.equals(name, student.name);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!(obj instanceof Student))
-            return false;
-        Student other = (Student) obj;
-        return Objects.equals(name, other.name);
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }
