@@ -287,7 +287,6 @@ public class Application extends JFrame {
         List<Cell> searchResults = ExcelUtil.search(workbook, txtName.getText());
         Date startDate = DateTimeUtil.parseDate(dpStartDate.getJFormattedTextField().getText(), DateFormat.SHORT);
         Date endDate = DateTimeUtil.parseDate(dpEndDate.getJFormattedTextField().getText(), DateFormat.SHORT);
-        workbook.close();
         return new DateTimeRecord(startDate, endDate, searchResults);
     }
 
